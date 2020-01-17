@@ -1,6 +1,6 @@
-class Refreshments
+class Refreshment
 
-  attr_reader: :name, :type, :price
+  attr_reader :name, :type, :price
 
   def initialize(name, type, price)
     @name = name
