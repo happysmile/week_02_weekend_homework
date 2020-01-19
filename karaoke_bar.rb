@@ -51,22 +51,32 @@ class KaraokeBar
         if (can_guest_afford_this(guest, ENTRY_FEE) == true)
             add_money_to_till(ENTRY_FEE)
             guest.remove_money_from_wallet(ENTRY_FEE)
-            return room.add_guest_to_room(guest)
+            room.add_guest_to_room(guest)
         end
       end
+    else
+      return "Sorry, the room is full"
     end
   end
 
   def check_out_guest(guest, room)
-    room.remove_guest_from_room(guest)
+    if (room.is_guest_in_room(guest)==true)
+      add_money_to_till(guest.tab)
+      guest.remove_money_from_wallet(guest.tab)
+      guest.reset_tab()
+      room.remove_guest_from_room(guest)
+    end
   end
 
   def sell_a_refreshment(guest, refreshment)
-    if(can_guest_afford_this(guest, refreshment.price))
-      add_money_to_till(refreshment.price)
-      guest.remove_money_from_wallet(refreshment.price)
-      remove_a_refreshment(refreshment)
-      guest.buy_a_refreshment(refreshment)
+    if(@refreshments.include?(refreshment))
+      money_to_pay = guest.tab + refreshment.price
+      if(can_guest_afford_this(guest, money_to_pay))
+        remove_a_refreshment(refreshment)
+        guest.buy_a_refreshment(refreshment)
+      end
+    else
+      return "Sorry, we have don't have any more #{refreshment} today"
     end
   end
 

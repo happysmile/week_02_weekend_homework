@@ -27,6 +27,7 @@ class TestKaraokeBar < MiniTest::Test
     @guest3 = Guest.new("Phil", 49, @song4)
     @guest4 = Guest.new("Jane", 25, @song1)
     @guest5 = Guest.new("Rose", 4, @song5)
+    @guest6 = Guest.new("Alan", 100, @song6)
     @room = Room.new(13, 10)
     @room.add_guest_to_room(@guest1)
     @room.add_guest_to_room(@guest2)
@@ -55,9 +56,15 @@ class TestKaraokeBar < MiniTest::Test
 
   def test_check_in_guest()
     assert_equal(2, @room.guests_in_room().count())
+    assert_equal(25, @guest4.wallet_cash)
+    assert_equal(49, @guest3.wallet_cash)
+    assert_equal(457, @karaoke_bar.till_cash)
     @karaoke_bar.check_in_guest(@guest4, @room)
     @karaoke_bar.check_in_guest(@guest3, @room)
     assert_equal(4, @room.guests_in_room().count())
+    assert_equal(20, @guest4.wallet_cash)
+    assert_equal(44, @guest3.wallet_cash)
+    assert_equal(467, @karaoke_bar.till_cash)
   end
 
   def test_check_in_guest_with_favourite_song_in_playlist()
@@ -65,7 +72,7 @@ class TestKaraokeBar < MiniTest::Test
     assert_equal("Whohooo! My favourite song is in the playlist!", @karaoke_bar.check_in_guest(@guest4, @room))
   end
 
-  def test_check_in_guest_no_money()
+  def test_check_in_guest_not_enough_money()
     assert_equal(2, @room.guests_in_room().count())
     @karaoke_bar.check_in_guest(@guest5, @room)
     assert_equal(2, @room.guests_in_room().count())
@@ -85,12 +92,35 @@ class TestKaraokeBar < MiniTest::Test
     assert_equal(3, @small_room.guests_in_room().count())
     @karaoke_bar.check_in_guest(@guest4, @small_room)
     assert_equal(3, @small_room.guests_in_room().count())
+    assert_equal("Sorry, the room is full", @karaoke_bar.check_in_guest(@guest6, @small_room))
   end
 
   def test_check_out_guest()
+    @karaoke_bar.add_a_refreshment(@chips)
+    @karaoke_bar.add_a_refreshment(@coke)
+    @karaoke_bar.add_a_refreshment(@peanuts)
     assert_equal(2, @small_room.guests_in_room().count())
+    assert_equal(0, @guest2.tab)
+    assert_equal(150, @guest2.wallet_cash)
+    assert_equal(457, @karaoke_bar.till_cash)
+    assert_equal(3, @karaoke_bar.get_refreshments().count())
+    assert_equal(0, @guest2.bought_refreshments().count())
+    @karaoke_bar.sell_a_refreshment(@guest2, @chips)
+    @karaoke_bar.sell_a_refreshment(@guest2, @coke)
+    @karaoke_bar.sell_a_refreshment(@guest2, @peanuts)
+    assert_equal(2, @small_room.guests_in_room().count())
+    assert_equal(9, @guest2.tab)
+    assert_equal(150, @guest2.wallet_cash)
+    assert_equal(457, @karaoke_bar.till_cash)
+    assert_equal(0, @karaoke_bar.get_refreshments().count())
+    assert_equal(3, @guest2.bought_refreshments().count())
     @karaoke_bar.check_out_guest(@guest2, @small_room)
     assert_equal(1, @small_room.guests_in_room().count())
+    assert_equal(0, @guest2.tab)
+    assert_equal(141, @guest2.wallet_cash)
+    assert_equal(466, @karaoke_bar.till_cash)
+    assert_equal(0, @karaoke_bar.get_refreshments().count())
+    assert_equal(3, @guest2.bought_refreshments().count())
   end
 
   def test_check_out_guest_who_is_not_the_room()
@@ -115,17 +145,15 @@ class TestKaraokeBar < MiniTest::Test
   end
 
   def test_sell_a_refreshment()
+    assert_equal(0,@guest1.tab)
     @karaoke_bar.add_a_refreshment(@chips)
     @karaoke_bar.add_a_refreshment(@coke)
     assert_equal(2, @karaoke_bar.get_refreshments().count())
     assert_equal(0, @guest1.bought_refreshments().count())
-    assert_equal(457,@karaoke_bar.till_cash)
-    assert_equal(78,@guest1.wallet_cash)
     @karaoke_bar.sell_a_refreshment(@guest1, @chips)
     assert_equal(1, @karaoke_bar.get_refreshments().count())
     assert_equal(1, @guest1.bought_refreshments().count())
-    assert_equal(460,@karaoke_bar.till_cash)
-    assert_equal(75,@guest1.wallet_cash)
+    assert_equal(3,@guest1.tab)
   end
 
 

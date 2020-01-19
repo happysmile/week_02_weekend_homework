@@ -50,7 +50,7 @@ class TestGuest < MiniTest::Test
 
   def test_buy_a_refreshment()
     @guest1.buy_a_refreshment(@chips)
-    assert_equal(1,@guest1.refreshments.count())
+    assert_equal(1,@guest1.bought_refreshments.count())
   end
 
 end
