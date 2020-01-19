@@ -43,22 +43,14 @@ class Room
   end
 
   def add_guest_to_room(guest)
-    # if (spaces_left_in_room() > 0)
-    #   if(is_guest_in_room(guest)==false)
-        @guests.push(guest)
-        if(@songs.include?(guest.favourite_song))
-          return guest.cheer_loudly()
-        end
-    #   end
-    # else
-    #   return "Sorry, the room is full"
-    # end
+    @guests.push(guest)
+    if(@songs.include?(guest.favourite_song))
+      return guest.cheer_loudly()
+    end
   end
 
   def remove_guest_from_room(guest)
-    # if(is_guest_in_room(guest))
       @guests.delete(guest)
-    # end
   end
 
 end
